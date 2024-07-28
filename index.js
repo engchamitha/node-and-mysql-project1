@@ -9,8 +9,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const userRoutes = require('./routes/userRoutes');
-app.use('/api/auth', userRoutes);
+const routes = require('./routes/routes');
+app.use('/api', routes);
 
 const server = app.listen(process.env.EXPRESS_SERVER_PORT, process.env.EXPRESS_SERVER_HOST, () => {
     console.log(`Express server is listening\nHOST: ${server.address().address}\nPORT: ${server.address().port}\n`)

@@ -1,9 +1,9 @@
 const dbService = require('../config/dbConfig').getDbServiceInstant()
 const connection = dbService.getConnection()
 
-const selectAllUsers = async (req, res) => {
+const selectAllToDo = async (req, res) => {
 
-    const sql = 'SELECT * FROM `auth`';
+    const sql = 'SELECT * FROM `todo`';
 
     try {
         await new Promise((resolve, reject) => {
@@ -17,14 +17,14 @@ const selectAllUsers = async (req, res) => {
             })
         })
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        res.status(500).json({ error: error })
     }
 }
 
-const selectUserByUsername = async (req, res) => {
+const selectToDoById = async (req, res) => {
 
-    const sql = 'SELECT * FROM `auth` WHERE `username` = ?';
-    const values = [req.body.username];
+    const sql = 'SELECT * FROM `todo` WHERE `todoid` = ?'
+    const values = [req.body.todoid];
 
     try {
         await new Promise((resolve, reject) => {
@@ -35,18 +35,17 @@ const selectUserByUsername = async (req, res) => {
                 } else {
                     resolve(res.status(200).json(rows))
                 }
-            })
+            });
         })
-
     } catch (error) {
         res.status(500).json({ error: error })
     }
 }
 
-const insertUser = async (req, res) => {
+const insertToDo = async (req, res) => {
 
-    const sql = 'INSERT INTO `auth`(`username`, `password`) VALUES (?, ?)';
-    const values = [req.body.username, req.body.password];
+    const sql = 'INSERT INTO `todo`(`title`, `description`, `status`) VALUES (?, ?, ?)';
+    const values = [req.body.title, req.body.description, req.body.status];
 
     try {
         await new Promise((resolve, reject) => {
@@ -55,7 +54,7 @@ const insertUser = async (req, res) => {
                 if (err instanceof Error) {
                     reject(err)
                 } else {
-                    resolve(res.status(201).json(result))
+                    resolve(res.status(200).json(result))
                 }
             });
         });
@@ -66,10 +65,11 @@ const insertUser = async (req, res) => {
 
 }
 
-const updateUserById = async (req, res) => {
 
-    const sql = 'UPDATE `auth` SET `username` = ?, `password` = ? WHERE `userID` = ? LIMIT 1';
-    const values = [req.body.username, req.body.password, req.body.userID];
+const updateToDoById = async (req, res) => {
+
+    const sql = 'UPDATE `todo` SET `title` = ?, `description` = ?, `status` = ?  WHERE `todoid` = ? LIMIT 1';
+    const values = [req.body.title, req.body.description, req.body.status, req.body.todoid];
 
     try {
         await new Promise((resolve, reject) => {
@@ -78,12 +78,7 @@ const updateUserById = async (req, res) => {
                 if (err instanceof Error) {
                     reject(err)
                 } else {
-
-                    if (result.affectedRows > 0) {
-                        resolve(res.status(200).json({ message: 'User updated successfully' }));
-                    } else {
-                        resolve(res.status(404).json({ message: 'User not found' }));
-                    }
+                    resolve(res.status(200).json(result))
                 }
             });
         });
@@ -91,12 +86,14 @@ const updateUserById = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error })
     }
+
 }
 
-const deleteUserById = async (req, res) => {
 
-    const sql = 'DELETE FROM `auth` WHERE `userID` = ? LIMIT 1';
-    const values = [req.body.userID];
+const deleteToDoById = async (req, res) => {
+
+    const sql = 'DELETE FROM `todo` WHERE `todoid` = ? LIMIT 1';
+    const values = [req.body.todoid];
 
     try {
         await new Promise((resolve, reject) => {
@@ -114,10 +111,11 @@ const deleteUserById = async (req, res) => {
     }
 }
 
+
 module.exports = {
-    selectAllUsers,
-    selectUserByUsername,
-    insertUser,
-    updateUserById,
-    deleteUserById
+    selectAllToDo,
+    selectToDoById,
+    insertToDo,
+    updateToDoById,
+    deleteToDoById
 }
